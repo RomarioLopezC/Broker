@@ -16,7 +16,7 @@ public class Cliente {
     int id = 4;
     ProxyCliente proxyCliente;
 
-    public void principal(String host, String port) {
+    public void startTask(String host, String port) {
         Scanner scn = new Scanner(System.in);
 
         proxyCliente = new ProxyCliente();
@@ -57,7 +57,7 @@ public class Cliente {
                     break;
                 case "5":
                     //clienteDice= scn.nextLine().toLowerCase();
-                    proxyCliente.Connect(candidatos, host, port);
+                    proxyCliente.sendRequest(candidatos, host, port);
                     System.out.println("\n\n****MODULO DE VOTOS****");
                     break;
                 case "cls":
@@ -75,7 +75,7 @@ public class Cliente {
         //proxy.peticionDeServicio(null, numeros);
     }
 
-    public static void clearConsole() {
+    public void clearConsole() {
         try {
             Runtime.getRuntime().exec("cls");
             
@@ -95,7 +95,7 @@ public class Cliente {
         }
         Cliente cliente = new Cliente();
         cliente.inicializarCandidatos();
-        cliente.principal(args[0], args[1]);
+        cliente.startTask(args[0], args[1]);
     }
 
     public void inicializarCandidatos() {

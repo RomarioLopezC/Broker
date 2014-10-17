@@ -23,7 +23,7 @@ public class ProxyCliente {
     private static final int TERMINO = 2;
     private static int STATE = 0;
     
-    public void Connect(ArrayList candidatos,String host, String port) {
+    public void sendRequest(ArrayList candidatos,String host, String port) {
         this.candidatos = candidatos;
         String hostNameBroker = host;
         int portNumberBroker = Integer.parseInt(port);

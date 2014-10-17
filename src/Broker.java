@@ -22,7 +22,7 @@ public class Broker {
 
     ArrayList<Servers> ListaDeServicios = new ArrayList();
 
-    public void abrirBroker(String port) {
+    public void startBroker(String port) {
         ListaDeServicios.add(new Servers("barras","192.168.230.149", 4444));
         ListaDeServicios.add(new Servers("pastel","192.168.230.150", 4444));
         ListaDeServicios.add(new Servers("tabla","192.168.230.151", 4444));
@@ -30,8 +30,8 @@ public class Broker {
         
         while(true){
             try (
-                    ServerSocket serverSocket = new ServerSocket(portNumber);
-                    Socket clientSocket = serverSocket.accept();
+                    ServerSocket brokerSocket = new ServerSocket(portNumber);
+                    Socket clientSocket = brokerSocket.accept();
                     PrintWriter aCliente = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deCliente = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
@@ -50,7 +50,7 @@ public class Broker {
                         servicio(inputLine, aCliente);
                         
                     }else if (inputLine.toLowerCase().contains("agregar")) {
-                        agregarServidor(inputLine, aCliente);
+                        regService(inputLine, aCliente);
                     } else {
                         aCliente.println("Terminar Comando no encontrado");
                     }
@@ -67,12 +67,13 @@ public class Broker {
     public void servicio(String input, PrintWriter outClient){
         String servicio = (input.split(",")[0]).split(" ")[1];
         String datos = input.split(",")[1];
-        int servidor = buscarServicio(servicio);
+        
+        int servidor = findServer(servicio);
         if(servidor==-1){
             outClient.println("Terminar Servicio no encontrado\nPresionar Enter para continuar");
         } else{
             String hostName = ListaDeServicios.get(servidor).getIp();
-        int portNumber = ListaDeServicios.get(servidor).getPort();
+            int portNumber = ListaDeServicios.get(servidor).getPort();
         
         try (
             Socket kkSocket = new Socket(hostName, portNumber);
@@ -91,20 +92,19 @@ public class Broker {
             server.println(input);
             fromServer = inServer.readLine();
             outClient.println(fromServer);
-            
-            
+              
         } catch (UnknownHostException e) {
             System.err.println("Don't know about hostServer " + hostName);
             System.exit(1);
         } catch (IOException e) {
-            outClient.println("Terminar Servidor de servicio "+servicio+" caido.");
+            outClient.println("Terminar Servidor de servicio ["+servicio+"] caido.");
             System.err.println("No se pudo conectar a " +
                 hostName);
         }
         }
         
     }
-    public void agregarServidor(String str, PrintWriter out) {
+    public void regService(String str, PrintWriter out) {
         String[] partida = str.split(" ");
         if (partida.length != 3) {
             out.println("Escribir> agregar IP PORT");
@@ -113,7 +113,7 @@ public class Broker {
         }
     }
 
-    public int buscarServicio(String servicio){
+    public int findServer(String servicio){
         int num=0;
         for(Servers serv: ListaDeServicios){
             if(serv.getServicio().equalsIgnoreCase(servicio)){
@@ -135,6 +135,6 @@ public class Broker {
             System.exit(1);
         }
         Broker broker = new Broker();
-        broker.abrirBroker(args[0]);
+        broker.startBroker(args[0]);
     }
 }
