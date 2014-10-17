@@ -22,11 +22,11 @@ public class Broker {
 
     ArrayList<Servers> ListaDeServicios = new ArrayList();
 
-    public void abrirBroker() {
+    public void abrirBroker(String port) {
         ListaDeServicios.add(new Servers("barras","192.168.230.149", 4444));
         ListaDeServicios.add(new Servers("pastel","192.168.230.150", 4444));
         ListaDeServicios.add(new Servers("tabla","192.168.230.151", 4444));
-        int portNumber = 4444;
+        int portNumber = Integer.parseInt(port);
         
         while(true){
             try (
@@ -35,12 +35,12 @@ public class Broker {
                     PrintWriter aCliente = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deCliente = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
+                
                 System.out.println("Server up and running");
                 aCliente.println("Ingresar comando");
                 System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
                
-                String inputLine, outputLine;
-                // Initiate conversation with client
+                String inputLine;
                 while ((inputLine = deCliente.readLine()) != null) {
                     aCliente.println("Comando recibido.");
                     System.out.println("Cliente: " + inputLine);
@@ -51,14 +51,13 @@ public class Broker {
                         
                     }else if (inputLine.toLowerCase().contains("agregar")) {
                         agregarServidor(inputLine, aCliente);
-                        
                     } else {
                         aCliente.println("Terminar Comando no encontrado");
                     }
                 }
             } catch (IOException e) {
-                System.out.println("Exception caught when trying to listen on port "
-                        + portNumber + " or listening for a connection");
+                System.out.println("Esta ocupado el puerto "
+                        + portNumber + " intenta con otro puerto.");
                 System.out.println(e.getMessage());
             }
         }    
@@ -67,18 +66,13 @@ public class Broker {
 
     public void servicio(String input, PrintWriter outClient){
         String servicio = (input.split(",")[0]).split(" ")[1];
-        //System.out.println(servicio);
         String datos = input.split(",")[1];
-        //System.out.println(datos);
         int servidor = buscarServicio(servicio);
         if(servidor==-1){
             outClient.println("Terminar Servicio no encontrado\nPresionar Enter para continuar");
         } else{
             String hostName = ListaDeServicios.get(servidor).getIp();
-        //int portNumber = (int)this.ListaDeServicios.get(broker);
         int portNumber = ListaDeServicios.get(servidor).getPort();
-        
-        
         
         try (
             Socket kkSocket = new Socket(hostName, portNumber);
@@ -104,7 +98,7 @@ public class Broker {
             System.exit(1);
         } catch (IOException e) {
             outClient.println("Terminar Servidor de servicio "+servicio+" caido.");
-            System.err.println("Couldn't get I/O for the connection to " +
+            System.err.println("No se pudo conectar a " +
                 hostName);
         }
         }
@@ -133,7 +127,14 @@ public class Broker {
     
 
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println(
+                    "Uso: java Broker <port number>");
+            System.err.println(
+                    "Ejemplo: java Broker 4444");
+            System.exit(1);
+        }
         Broker broker = new Broker();
-        broker.abrirBroker();
+        broker.abrirBroker(args[0]);
     }
 }

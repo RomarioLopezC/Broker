@@ -65,7 +65,7 @@ public class ProxyCliente {
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostNameBroker);
         } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to "
+            System.err.println("No se pudo conectar al Broker, asegurate de que este corriendo "
                     + hostNameBroker);
         }
 

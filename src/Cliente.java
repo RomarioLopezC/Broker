@@ -12,11 +12,11 @@ import java.util.Scanner;
  */
 public class Cliente {
 
-    static ArrayList<Candidatos> candidatos = new ArrayList();
-    static int id = 4;
-    static ProxyCliente proxyCliente;
+    ArrayList<Candidatos> candidatos = new ArrayList();
+    int id = 4;
+    ProxyCliente proxyCliente;
 
-    public static void principal(String host, String port) {
+    public void principal(String host, String port) {
         Scanner scn = new Scanner(System.in);
 
         proxyCliente = new ProxyCliente();
@@ -81,7 +81,7 @@ public class Cliente {
             
         } catch (final Exception e) {
             //  Handle any exceptions.
-            System.out.println("No se puede limpiar ventana por ser Windows 8");
+            System.out.println("Error Contacte al administrador del programa.");
         }
     }
 
@@ -93,34 +93,36 @@ public class Cliente {
                     "Ejemplo: java Client 192.168.123.123 4444");
             System.exit(1);
         }
-        inicializarCandidatos();
-        principal(args[0], args[1]);
+        Cliente cliente = new Cliente();
+        cliente.inicializarCandidatos();
+        cliente.principal(args[0], args[1]);
     }
 
-    public static void inicializarCandidatos() {
+    public void inicializarCandidatos() {
         candidatos.add(new Candidatos(1, "romario"));
         candidatos.add(new Candidatos(2, "alejandro"));
         candidatos.add(new Candidatos(3, "eduardo"));
     }
 
-    public static void agregarCandidato() {
+    public void agregarCandidato() {
         Scanner scn = new Scanner(System.in);
         System.out.println("Ingresa el nombre");
         candidatos.add(new Candidatos(id, scn.nextLine()));
         id++;
     }
 
-    public static void verVotos() {
+    public void verVotos() {
         for (Candidatos cand : candidatos) {
             System.out.println("Id: " + cand.getId() + "  " + cand.getNombre() + " >> " + cand.getVotos());
         }
     }
 
-    public static void votar() {
+    public void votar() {
         boolean encontrado = false;
         Scanner scn = new Scanner(System.in);
         System.out.println("Ingresa el nombre del candidato");
         String a = scn.nextLine().toLowerCase();
+        
         for (Candidatos cand : candidatos) {
             if (cand.getNombre().equals(a)) {
                 cand.incrementarVotos();
