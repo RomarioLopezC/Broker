@@ -99,16 +99,29 @@ public class Cliente {
     }
 
     public void inicializarCandidatos() {
-        candidatos.add(new Candidatos(1, "romario"));
-        candidatos.add(new Candidatos(2, "alejandro"));
-        candidatos.add(new Candidatos(3, "eduardo"));
+        candidatos.add(new Candidatos(1, "romario lopez"));
+        candidatos.add(new Candidatos(2, "alejandro sumarraga"));
+        candidatos.add(new Candidatos(3, "eduardo canche"));
     }
 
     public void agregarCandidato() {
         Scanner scn = new Scanner(System.in);
+        boolean existeCandidato=false;
         System.out.println("Ingresa el nombre");
-        candidatos.add(new Candidatos(id, scn.nextLine()));
-        id++;
+        String nombre = scn.nextLine();
+        for(Candidatos cand: candidatos){
+            if(cand.getNombre().equals(nombre)){
+                existeCandidato=true;
+            }
+        }
+        if(!existeCandidato){
+            candidatos.add(new Candidatos(id, nombre));
+            id++;
+        } else{
+            System.out.println("Ya existe un candidato con ese nombre.");
+        }
+            
+        
     }
 
     public void verVotos() {
