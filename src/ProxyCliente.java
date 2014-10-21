@@ -22,8 +22,8 @@ public class ProxyCliente {
     private static final int COMANDOENVIADO = 1;
     private static final int TERMINO = 2;
     private static int STATE = 0;
-    
-    public void sendRequest(ArrayList candidatos,String host, String port) {
+
+    public void sendRequest(ArrayList candidatos, String host, String port) {
         this.candidatos = candidatos;
         String hostNameBroker = host;
         int portNumberBroker = Integer.parseInt(port);
@@ -38,22 +38,22 @@ public class ProxyCliente {
             String fromClient;
 
             while ((fromBroker = deBroker.readLine()) != null) {
-                System.out.println("**Broker: " +fromBroker);
+                System.out.println("**Broker: " + fromBroker);
                 if (fromBroker.toLowerCase().contains("terminar")) {
                     //System.out.println("Broker: " + fromBroker);
-                    STATE=0;
+                    STATE = 0;
                     break;
                 }
 
                 //fromClient = clienteDice;
-                if(STATE!=COMANDOENVIADO){
+                if (STATE != COMANDOENVIADO) {
                     System.out.print(">>");
-                if ((fromClient=stdIn.readLine()) != null) {
+                    if ((fromClient = stdIn.readLine()) != null) {
                         if (fromClient.toLowerCase().contains("enviar")) {
                             packData();
                             fromClient += "," + datosServicio;
                             aBroker.println(fromClient);
-                        } else{
+                        } else {
                             aBroker.println(fromClient);
                             //aBroker.println(fromClient);
                         }
@@ -75,7 +75,7 @@ public class ProxyCliente {
         datosServicio = "";
 
         for (Candidatos cand : candidatos) {
-            String dato = cand.getNombre() + "|" + cand.getVotos() + "%";
+            String dato = cand.getId() + "&" + cand.getNombre() + "&" + cand.getVotos() + "%";
             datosServicio += dato;
         }
 

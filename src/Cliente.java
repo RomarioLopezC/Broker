@@ -78,7 +78,7 @@ public class Cliente {
     public void clearConsole() {
         try {
             Runtime.getRuntime().exec("cls");
-            
+
         } catch (final Exception e) {
             //  Handle any exceptions.
             System.out.println("Error Contacte al administrador del programa.");
@@ -99,29 +99,28 @@ public class Cliente {
     }
 
     public void inicializarCandidatos() {
-        candidatos.add(new Candidatos(1, "romario lopez"));
-        candidatos.add(new Candidatos(2, "alejandro sumarraga"));
-        candidatos.add(new Candidatos(3, "eduardo canche"));
+        candidatos.add(new Candidatos(1, "romario lopez",0));
+        candidatos.add(new Candidatos(2, "alejandro sumarraga",0));
+        candidatos.add(new Candidatos(3, "eduardo canche",0));
     }
 
     public void agregarCandidato() {
         Scanner scn = new Scanner(System.in);
-        boolean existeCandidato=false;
+        boolean existeCandidato = false;
         System.out.println("Ingresa el nombre");
         String nombre = scn.nextLine();
-        for(Candidatos cand: candidatos){
-            if(cand.getNombre().equals(nombre)){
-                existeCandidato=true;
+        for (Candidatos cand : candidatos) {
+            if (cand.getNombre().equals(nombre)) {
+                existeCandidato = true;
             }
         }
-        if(!existeCandidato){
-            candidatos.add(new Candidatos(id, nombre));
+        if (!existeCandidato) {
+            candidatos.add(new Candidatos(id, nombre,0));
             id++;
-        } else{
+        } else {
             System.out.println("Ya existe un candidato con ese nombre.");
         }
-            
-        
+
     }
 
     public void verVotos() {
@@ -135,7 +134,7 @@ public class Cliente {
         Scanner scn = new Scanner(System.in);
         System.out.println("Ingresa el nombre del candidato");
         String a = scn.nextLine().toLowerCase();
-        
+
         for (Candidatos cand : candidatos) {
             if (cand.getNombre().equals(a)) {
                 cand.incrementarVotos();

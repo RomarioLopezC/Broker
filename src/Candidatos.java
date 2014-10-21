@@ -11,9 +11,9 @@ public class Candidatos {
     String nombre;
     int votos;
     int id;
-    public Candidatos(int id,String nombre) {
+    public Candidatos(int id,String nombre, int votos) {
         this.nombre = nombre.toLowerCase();
-        this.votos = 0;
+        this.votos = votos;
         this.id = id;
     }
 
@@ -44,6 +44,12 @@ public class Candidatos {
     public void setVotos(int votos) {
         this.votos = votos;
     }
+
+    @Override
+    public String toString() {
+        return id + "|" + nombre + "|" + votos;
+    } 
+    
     
     
 }

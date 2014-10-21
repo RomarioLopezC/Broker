@@ -9,7 +9,7 @@
  */
 public class Servidor {
     
-    public String letrasNumeros(int[] numeros){
+    public String letrasNumeros(String numeros){
         return "letras";
     }
     
