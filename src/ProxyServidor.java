@@ -17,8 +17,7 @@ import java.util.StringTokenizer;
  * @author Romario
  */
 public class ProxyServidor {
-
-    Servidor servidor;
+    Servidor servidor ;
     ArrayList<Candidatos> cand;
 
     public ProxyServidor() {
@@ -41,15 +40,21 @@ public class ProxyServidor {
             // Initiate conversation with client
             inputLine = deBroker.readLine();
             System.out.println("Broker: " + inputLine);
-            if ((inputLine.contains("pastel"))) {
-                cand = unpackData(inputLine);
-                aBroker.println(servidor.letrasNumeros(cand));
-            } else if ((inputLine.contains("barras"))) {
-                cand = unpackData(inputLine);
-                aBroker.println(servidor.letrasNumeros(cand));
-            } else if ((inputLine.contains("tabla"))) {
-                cand = unpackData(inputLine);
-                aBroker.println(servidor.letrasNumeros(cand));
+            try {
+                   
+
+                if ((inputLine.contains("pastel"))) {
+                    cand = unpackData(inputLine);
+                    aBroker.println(servidor.letrasNumeros(cand));
+                } else if ((inputLine.contains("barras"))) {
+                    cand = unpackData(inputLine);
+                    aBroker.println(servidor.letrasNumeros(cand));
+                } else if ((inputLine.contains("tabla"))) {
+                    cand = unpackData(inputLine);
+                    aBroker.println(servidor.letrasNumeros(cand));
+                }
+            } catch (NoClassDefFoundError e) {
+                System.out.println(e.getLocalizedMessage());
             }
 
         } catch (IOException e) {

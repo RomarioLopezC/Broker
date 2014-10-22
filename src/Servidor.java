@@ -21,7 +21,9 @@ public class Servidor {
     private DefaultCategoryDataset data;
 
     public Servidor() {
-        this.data = new DefaultCategoryDataset();
+        System.out.println("inicializando");
+        try{
+        data = new DefaultCategoryDataset();
         chart = ChartFactory.createBarChart(
                 "Gráfica de barras.",
                 "Candidatos",
@@ -34,6 +36,12 @@ public class Servidor {
         frame = new ChartFrame("Vista", chart);
         frame.pack();
         frame.setVisible(true);
+        }catch(NoClassDefFoundError e){
+            System.out.println("error: " + e.getLocalizedMessage());
+            System.out.println(e.getStackTrace());
+            System.out.println(e.toString());
+            
+        }
     }
 
     public String letrasNumeros(ArrayList<Candidatos> candidatos) {
@@ -53,7 +61,6 @@ public class Servidor {
                 true,
                 false);
 
-        return "Solicitud procesada con éxito.";
+        return "Terminar Solicitud procesada con éxito.";
     }
-
 }

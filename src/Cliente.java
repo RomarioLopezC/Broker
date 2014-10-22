@@ -79,6 +79,7 @@ public class Cliente {
     }
 
     public static void main(String[] args) {
+        
         if (args.length != 2) {
             System.err.println(
                     "Uso: java Client <host name> <port number>");
