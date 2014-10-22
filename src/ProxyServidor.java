@@ -43,13 +43,13 @@ public class ProxyServidor {
             System.out.println("Broker: " + inputLine);
             if ((inputLine.contains("pastel"))) {
                 cand = unpackData(inputLine);
-                aBroker.println(servidor.letrasNumeros(inputLine));
+                aBroker.println(servidor.letrasNumeros(cand));
             } else if ((inputLine.contains("barras"))) {
                 cand = unpackData(inputLine);
-                aBroker.println(servidor.letrasNumeros(inputLine));
+                aBroker.println(servidor.letrasNumeros(cand));
             } else if ((inputLine.contains("tabla"))) {
                 cand = unpackData(inputLine);
-                aBroker.println(servidor.letrasNumeros(inputLine));
+                aBroker.println(servidor.letrasNumeros(cand));
             }
 
         } catch (IOException e) {
@@ -60,19 +60,21 @@ public class ProxyServidor {
     }
 
     private ArrayList<Candidatos> unpackData(String cadenaDatos) {
-        ArrayList<Candidatos> cands = new ArrayList<>();
+        ArrayList<Candidatos> candidatos = new ArrayList<>();
 
         String datos = cadenaDatos.split(",")[1];
         String[] cadCandidatos = datos.split("%");
-        
-        StringTokenizer token;      
-        
-        for (int i =0; i<cadCandidatos.length;i++) {
-            token = new StringTokenizer(cadCandidatos[i],"&");
-            cands.add(new Candidatos(Integer.parseInt(token.nextToken()),token.nextToken(),Integer.parseInt(token.nextToken())));
+
+        StringTokenizer tokenCandidatos;
+
+        for (String candidato : cadCandidatos) {
+            tokenCandidatos = new StringTokenizer(candidato, "&");
+            candidatos.add(new Candidatos(Integer.parseInt(tokenCandidatos.nextToken()),
+                    tokenCandidatos.nextToken(),
+                    Integer.parseInt(tokenCandidatos.nextToken())));
         }
-      
-        return cands;
+
+        return candidatos;
     }
 
     public static void main(String[] args) {

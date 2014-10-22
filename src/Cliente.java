@@ -21,18 +21,11 @@ public class Cliente {
 
         proxyCliente = new ProxyCliente();
 
-        String clienteDice;
-        System.out.println("\n\n****MODULO DE VOTOS****"
-                + "\n\nIngrese el el numero de lo que desea realizar:"
-                + "\n1.- Votar"
-                + "\n2.- Ver Votos"
-                + "\n3.- Agregar Candidato "
-                + "\n4.- Ver opciones"
-                + "\n5.- Escribir comando "
-                + "\nEscriba salir para terminar");
-
+        mostrarOpciones();
+        
         System.out.print(">> ");
-        while (!(clienteDice = scn.nextLine().toLowerCase()).contains("salir")) {
+        String clienteDice = scn.nextLine().toLowerCase();
+        do {
 
             String opcion = clienteDice;
 
@@ -47,16 +40,9 @@ public class Cliente {
                     agregarCandidato();
                     break;
                 case "4":
-                    System.out.println("\n\n****MODULO DE VOTOS****"
-                            + "\nIngrese el numero de lo que desea realizar:"
-                            + "\n1.- Votar"
-                            + "\n2.- Ver Votos"
-                            + "\n3.- Agregar Candidato "
-                            + "\n4.- Ver opciones"
-                            + "\n5.- Escribir comando");
+                    mostrarOpciones();
                     break;
                 case "5":
-                    //clienteDice= scn.nextLine().toLowerCase();
                     proxyCliente.sendRequest(candidatos, host, port);
                     System.out.println("\n\n****MODULO DE VOTOS****");
                     break;
@@ -69,10 +55,7 @@ public class Cliente {
             }
             System.out.println("\nIngrese opcion");
             System.out.print(">> ");
-        }
-        //System.out.println(clienteDice);
-
-        //proxy.peticionDeServicio(null, numeros);
+        } while (!(clienteDice = scn.nextLine().toLowerCase()).contains("salir"));
     }
 
     public void clearConsole() {
@@ -83,6 +66,16 @@ public class Cliente {
             //  Handle any exceptions.
             System.out.println("Error Contacte al administrador del programa.");
         }
+    }
+
+    public void mostrarOpciones() {
+        System.out.println("\n\n****MODULO DE VOTOS****"
+                + "\nIngrese el numero de lo que desea realizar:"
+                + "\n1.- Votar"
+                + "\n2.- Ver Votos"
+                + "\n3.- Agregar Candidato "
+                + "\n4.- Ver opciones"
+                + "\n5.- Escribir comando");
     }
 
     public static void main(String[] args) {
@@ -99,9 +92,9 @@ public class Cliente {
     }
 
     public void inicializarCandidatos() {
-        candidatos.add(new Candidatos(1, "romario lopez",0));
-        candidatos.add(new Candidatos(2, "alejandro sumarraga",0));
-        candidatos.add(new Candidatos(3, "eduardo canche",0));
+        candidatos.add(new Candidatos(1, "romario lopez", 0));
+        candidatos.add(new Candidatos(2, "alejandro sumarraga", 0));
+        candidatos.add(new Candidatos(3, "eduardo canche", 0));
     }
 
     public void agregarCandidato() {
@@ -115,7 +108,7 @@ public class Cliente {
             }
         }
         if (!existeCandidato) {
-            candidatos.add(new Candidatos(id, nombre,0));
+            candidatos.add(new Candidatos(id, nombre, 0));
             id++;
         } else {
             System.out.println("Ya existe un candidato con ese nombre.");

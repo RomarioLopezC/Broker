@@ -34,7 +34,7 @@ public class Broker {
                     BufferedReader deCliente = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
 
-                System.out.println("Server up and running");
+                System.out.println("Servidor inicializado y corriendo");
                 aCliente.println("Ingresar comando");
                 System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
 
