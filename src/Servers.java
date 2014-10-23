@@ -12,6 +12,7 @@
 public class Servers {
     String ip;
     int port;
+    private boolean estaActivo;
 
     public String getServicio() {
         return servicio;
@@ -25,6 +26,7 @@ public class Servers {
         this.ip = ip;
         this.port = port;
         this.servicio=servicio.toLowerCase();
+        estaActivo = true;
     }
 
     public String getIp() {
@@ -46,5 +48,19 @@ public class Servers {
     @Override
     public String toString() {
         return " >> "+this.ip + " : " + this.port;//To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the estaActivo
+     */
+    public boolean isEstaActivo() {
+        return estaActivo;
+    }
+
+    /**
+     * @param estaActivo the estaActivo to set
+     */
+    public void setEstaActivo(boolean estaActivo) {
+        this.estaActivo = estaActivo;
     }
 }

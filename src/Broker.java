@@ -20,21 +20,22 @@ public class Broker {
 
     ArrayList<Servers> ListaDeServicios = new ArrayList();
 
-    public void startBroker(String port) {
+    public void iniciarBroker(String port) {
+        //192.168.230.185
         ListaDeServicios.add(new Servers("barras", "127.0.0.1", 4444));
-        ListaDeServicios.add(new Servers("pastel", "192.168.230.150", 4444));
-        ListaDeServicios.add(new Servers("tabla", "192.168.230.151", 4444));
-        int portNumber = Integer.parseInt(port);
+        ListaDeServicios.add(new Servers("pastel", "127.0.0.1", 4444));
+        //ListaDeServicios.add(new Servers("tabla", "192.168.230.151", 4444));
+        int puerto = Integer.parseInt(port);
 
         while (true) {
             try (
-                    ServerSocket brokerSocket = new ServerSocket(portNumber);
+                    ServerSocket brokerSocket = new ServerSocket(puerto);
                     Socket clientSocket = brokerSocket.accept();
                     PrintWriter aCliente = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deCliente = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
 
-                System.out.println("Servidor inicializado y corriendo");
+                System.out.println("Broker inicializado y corriendo");
                 aCliente.println("Ingresar comando");
                 System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
 
@@ -45,28 +46,29 @@ public class Broker {
 
                     if (inputLine.toLowerCase().contains("enviar")) {
                         aCliente.println("Se procesara la solicitud");
-                        servicio(inputLine, aCliente);
+                        procesarServicio(inputLine, aCliente);
 
                     } else if (inputLine.toLowerCase().contains("agregar")) {
+                        /*Todavía no está implementado.*/
                         regService(inputLine, aCliente);
                     } else {
-                        aCliente.println("Terminar Comando no encontrado");
+                        aCliente.println("Terminar, Comando NO encontrado");
                     }
                 }
             } catch (IOException e) {
                 System.out.println("Esta ocupado el puerto "
-                        + portNumber + " intenta con otro puerto.");
+                        + puerto + " intenta con otro puerto.");
                 System.out.println(e.getMessage());
             }
         }
 
     }
 
-    public void servicio(String input, PrintWriter outClient) {
+    public void procesarServicio(String input, PrintWriter outClient) {
         String servicio = (input.split(",")[0]).split(" ")[1];
         String datos = input.split(",")[1];
 
-        int servidor = findServer(servicio);
+        int servidor = encontrarServidor(servicio);
         if (servidor == -1) {
             outClient.println("Terminar Servicio no encontrado\nPresionar Enter para continuar");
         } else {
@@ -93,7 +95,15 @@ public class Broker {
                 System.err.println("Don't know about hostServer " + hostName);
                 System.exit(1);
             } catch (IOException e) {
-                outClient.println("Terminar Servidor de servicio [" + servicio + "] caido.");
+
+                
+
+                outClient.println("Terminar Servidor de servicio [" + ListaDeServicios.get(servidor).getServicio() +
+                        "] caido. Cambiando su estado" + 
+                        " a Inactivo.");
+                
+                ListaDeServicios.get(servidor).setEstaActivo(false);
+                
                 System.err.println("No se pudo conectar a "
                         + hostName);
             }
@@ -110,7 +120,7 @@ public class Broker {
         }
     }
 
-    public int findServer(String servicio) {
+    public int encontrarServidor(String servicio) {
         int num = 0;
         for (Servers serv : ListaDeServicios) {
             if (serv.getServicio().equalsIgnoreCase(servicio)) {
@@ -130,6 +140,6 @@ public class Broker {
             System.exit(1);
         }
         Broker broker = new Broker();
-        broker.startBroker(args[0]);
+        broker.iniciarBroker(args[0]);
     }
 }

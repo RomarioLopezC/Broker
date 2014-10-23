@@ -1,9 +1,11 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,17 +20,23 @@ public class Servidor {
 
     private ChartFrame frame;
     private JFreeChart chart;
-    private DefaultCategoryDataset data;
+    private DefaultCategoryDataset datosBarras;
+    private DefaultPieDataset datosPastel;
 
     public Servidor() {
-        System.out.println("inicializando");
-        try{
-        data = new DefaultCategoryDataset();
+        System.out.println("inicializando Servidor.");
+        inicializarGraficosPastel();
+        inicializarGraficosBarras();
+        
+    }
+
+    private void inicializarGraficosBarras() {
+        datosBarras = new DefaultCategoryDataset();
         chart = ChartFactory.createBarChart(
                 "Gráfica de barras.",
                 "Candidatos",
                 "Votos Obtenidos",
-                data,
+                datosBarras,
                 PlotOrientation.VERTICAL,
                 true,
                 true,
@@ -36,18 +44,35 @@ public class Servidor {
         frame = new ChartFrame("Vista", chart);
         frame.pack();
         frame.setVisible(true);
-        }catch(NoClassDefFoundError e){
-            System.out.println("error: " + e.getLocalizedMessage());
-            System.out.println(e.getStackTrace());
-            System.out.println(e.toString());
-            
-        }
+
     }
 
-    public String letrasNumeros(ArrayList<Candidatos> candidatos) {
-        for (Candidatos candidato : candidatos) {
-            if (candidato != null) {
-                data.setValue(candidato.getVotos(), "", candidato.getNombre());
+    private void inicializarGraficosPastel() {
+        datosPastel = new DefaultPieDataset();
+        chart = ChartFactory.createPieChart(
+                "Gráfica de Pastel.",
+                datosPastel, true,
+                true,
+                false);
+        frame = new ChartFrame("Vista", chart);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private boolean esMultiploDeTres(int num) {
+        if (num % 3 == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public String graficarBarras(ArrayList<String> candidatos) {
+
+        for (int i = 0; i < candidatos.size(); i++) {
+
+            //recordar que el arrayList Está en múltiplos de 3:
+            if (esMultiploDeTres(i + 1)) {
+                datosBarras.setValue(Integer.parseInt(candidatos.get(i)), "", candidatos.get(i - 1));
             }
         }
 
@@ -55,12 +80,32 @@ public class Servidor {
                 "Gráfica de barras.",
                 "Candidatos",
                 "Votos Obtenidos",
-                data,
+                datosBarras,
                 PlotOrientation.VERTICAL,
                 true,
                 true,
                 false);
 
-        return "Terminar Solicitud procesada con éxito.";
+        return "Terminar Solicitud, procesada con éxito.";
     }
+
+    public String graficarPastel(ArrayList<String> candidatos) {
+        for (int i = 0; i < candidatos.size(); i++) {
+
+            //recordar que el arrayList Está en múltiplos de 3:
+            if (esMultiploDeTres(i + 1)) {
+                datosPastel.setValue(candidatos.get(i - 1), Integer.parseInt(candidatos.get(i)));
+            }
+        }
+        //creando el gráfico.
+        chart = ChartFactory.createPieChart(
+                "Gráfica de pastel.",
+                datosPastel,
+                true,
+                true,
+                false);
+
+        return "Terminar Solicitud, procesada con éxito.";
+    }
+
 }
