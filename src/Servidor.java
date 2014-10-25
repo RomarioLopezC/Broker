@@ -86,7 +86,7 @@ public class Servidor {
                 true,
                 false);
 
-        return "Terminar Solicitud, procesada con éxito.";
+        return "Terminar, Solicitud Graficar Barras procesada con éxito.";
     }
 
     public String graficarPastel(ArrayList<String> candidatos) {
@@ -105,7 +105,7 @@ public class Servidor {
                 true,
                 false);
 
-        return "Terminar Solicitud, procesada con éxito.";
+        return "Terminar, Solicitud Grafica de Pastel, procesada con éxito.";
     }
 
 }

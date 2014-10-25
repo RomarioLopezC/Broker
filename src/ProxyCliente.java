@@ -84,7 +84,7 @@ public class ProxyCliente {
                 if (getSTATE() != COMANDOENVIADO) {
                     System.out.print(">>");
                     if ((deCliente = stdIn.readLine()) != null) {
-                        if (deCliente.toLowerCase().contains("enviar")) {
+                        if (deCliente.toLowerCase().contains("graficar")) {
                             empaquetarDatos();
                             deCliente += "," + getString_DatosDeServicio();
                             aBroker.println(deCliente);

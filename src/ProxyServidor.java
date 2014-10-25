@@ -58,7 +58,7 @@ public class ProxyServidor {
                         aBroker.println(respuestaDeServidor);
 
                     } else {
-                        aBroker.println("No se encuentra ese servicio, "
+                        aBroker.println("Terminar No se encuentra ese servicio, "
                                 + "contacte al administrador");
 
                     }

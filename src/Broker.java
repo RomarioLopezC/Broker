@@ -24,7 +24,7 @@ public class Broker {
         //192.168.230.185
         ListaDeServicios.add(new Servers("barras", "127.0.0.1", 4444));
         ListaDeServicios.add(new Servers("pastel", "127.0.0.1", 4444));
-        //ListaDeServicios.add(new Servers("tabla", "192.168.230.151", 4444));
+        ListaDeServicios.add(new Servers("tabla", "192.168.1.25", 4444));
         int puerto = Integer.parseInt(port);
 
         while (true) {
@@ -44,7 +44,7 @@ public class Broker {
                     aCliente.println("Comando recibido.");
                     System.out.println("Cliente: " + inputLine);
 
-                    if (inputLine.toLowerCase().contains("enviar")) {
+                    if (inputLine.toLowerCase().contains("graficar")) {
                         aCliente.println("Se procesara la solicitud");
                         procesarServicio(inputLine, aCliente);
 
@@ -68,10 +68,13 @@ public class Broker {
         String servicio = (input.split(",")[0]).split(" ")[1];
         String datos = input.split(",")[1];
 
-        int servidor = encontrarServidor(servicio);
+        int servidor = encontrarServidor(servicio,outClient);
         if (servidor == -1) {
-            outClient.println("Terminar Servicio no encontrado\nPresionar Enter para continuar");
+            outClient.println("Terminar, Servicio no encontrado");
         } else {
+            //Que es -2 Significa que si esta el servicio pero esta inactivo
+            //Para más información checar funcion Encontrar Servidor
+            if(servidor == -2) return;
             String hostName = ListaDeServicios.get(servidor).getIp();
             int portNumber = ListaDeServicios.get(servidor).getPort();
 
@@ -120,11 +123,14 @@ public class Broker {
         }
     }
 
-    public int encontrarServidor(String servicio) {
+    public int encontrarServidor(String servicio,PrintWriter outClient) {
         int num = 0;
         for (Servers serv : ListaDeServicios) {
-            if (serv.getServicio().equalsIgnoreCase(servicio)) {
+            if (serv.getServicio().equalsIgnoreCase(servicio) && serv.estaActivo()) {
                 return num;
+            }else if(serv.getServicio().equalsIgnoreCase(servicio) && !serv.estaActivo()){
+                outClient.println("Terminar Servicio encontrado pero está inactivo");
+                return -2;
             }
             num++;
         }

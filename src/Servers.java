@@ -53,7 +53,7 @@ public class Servers {
     /**
      * @return the estaActivo
      */
-    public boolean isEstaActivo() {
+    public boolean estaActivo() {
         return estaActivo;
     }
 
