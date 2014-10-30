@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class Broker {
 
@@ -48,9 +48,10 @@ public class Broker {
                         aCliente.println("Se procesara la solicitud");
                         procesarServicio(inputLine, aCliente);
 
-                    } else if (inputLine.toLowerCase().contains("agregar")) {
+                    } else if (inputLine.toLowerCase().contains("agregarServ")) {
                         /*Todavía no está implementado.*/
-                        regService(inputLine, aCliente);
+                        registrarServicio(inputLine, aCliente);
+
                     } else {
                         aCliente.println("Terminar, Comando NO encontrado");
                     }
@@ -68,30 +69,34 @@ public class Broker {
         String servicio = (input.split(",")[0]).split(" ")[1];
         String datos = input.split(",")[1];
 
-        int servidor = encontrarServidor(servicio,outClient);
+        int servidor = encontrarServidor(servicio, outClient);
         if (servidor == -1) {
             outClient.println("Terminar, Servicio no encontrado");
         } else {
-            //Que es -2 Significa que si esta el servicio pero esta inactivo
+            //Que la variable servidor sea -2, Significa que si está 
+            //el servicio pero está inactivo.
             //Para más información checar funcion Encontrar Servidor
-            if(servidor == -2) return;
+            if (servidor == -2) {
+                outClient.println("Terminar, Servicio inactivo");
+                return;
+            }
             String hostName = ListaDeServicios.get(servidor).getIp();
             int portNumber = ListaDeServicios.get(servidor).getPort();
 
             try (
                     Socket kkSocket = new Socket(hostName, portNumber);
-                    PrintWriter server = new PrintWriter(kkSocket.getOutputStream(), true);
-                    BufferedReader inServer = new BufferedReader(
+                    PrintWriter aProxyServidor = new PrintWriter(kkSocket.getOutputStream(), true);
+                    BufferedReader deProxyServidor = new BufferedReader(
                             new InputStreamReader(kkSocket.getInputStream()));) {
                 BufferedReader stdIn
                         = new BufferedReader(new InputStreamReader(System.in));
                 String fromServer = null;
 
-                server.println(input);
-                fromServer = inServer.readLine();
+                aProxyServidor.println(input);
+                fromServer = deProxyServidor.readLine();
                 System.out.println("Server: " + fromServer);
-                server.println(input);
-                fromServer = inServer.readLine();
+                aProxyServidor.println(input);
+                fromServer = deProxyServidor.readLine();
                 outClient.println(fromServer);
 
             } catch (UnknownHostException e) {
@@ -99,14 +104,16 @@ public class Broker {
                 System.exit(1);
             } catch (IOException e) {
 
-                
+                outClient.println("Terminar Servidor de servicio [" + ListaDeServicios.get(servidor).getServicio()
+                        + "] caido. Cambiando su estado"
+                        + " a Inactivo.");
 
-                outClient.println("Terminar Servidor de servicio [" + ListaDeServicios.get(servidor).getServicio() +
-                        "] caido. Cambiando su estado" + 
-                        " a Inactivo.");
-                
+                /*Aquí es donde actualizamos nuestra Base de datos de
+                 servidores, ya que si  está siendo ocupado, se lanza una excepción
+                 y además seteamos dicho servidor como FALSO; es decir, no se
+                 encuentra disponible para dar servicio.*/
                 ListaDeServicios.get(servidor).setEstaActivo(false);
-                
+                //imprimimos que es imposible conectarnos:
                 System.err.println("No se pudo conectar a "
                         + hostName);
             }
@@ -114,21 +121,41 @@ public class Broker {
 
     }
 
-    public void regService(String str, PrintWriter out) {
+    /**
+     * Esta función sirve para agregar un servidor, sin embargo no está
+     * terminada. (Además no forma parte de la 2a entrega).
+     *
+     * @param str
+     * @param out
+     */
+    public void registrarServicio(String str, PrintWriter out) {
         String[] partida = str.split(" ");
-        if (partida.length != 3) {
-            out.println("Escribir> agregar IP PORT");
-        } else {
-            out.println("Servidor agregado> " + partida[1]);
-        }
+
+        String servicio = partida[3];
+        String ip = partida[1];
+        int puerto = Integer.parseInt(partida[2]);
+        ListaDeServicios.add(new Servers(servicio, ip, puerto));
+        out.println("Servidor agregado> " + partida[1]);
+
     }
 
-    public int encontrarServidor(String servicio,PrintWriter outClient) {
+    /**
+     * Encuentra el servidor que podrá dar el servicio que se solicita.
+     *
+     * @param servicio
+     * @param outClient
+     * @return
+     */
+    public int encontrarServidor(String servicio, PrintWriter outClient) {
         int num = 0;
         for (Servers serv : ListaDeServicios) {
+            /*Si el servicio está, y además está activo el servidor para dar
+             el servicio, entonces:*/
             if (serv.getServicio().equalsIgnoreCase(servicio) && serv.estaActivo()) {
                 return num;
-            }else if(serv.getServicio().equalsIgnoreCase(servicio) && !serv.estaActivo()){
+                /*Si el servicio está, pero el servidor está siendo ocupado
+                 entonces: */
+            } else if (serv.getServicio().equalsIgnoreCase(servicio) && !serv.estaActivo()) {
                 outClient.println("Terminar Servicio encontrado pero está inactivo");
                 return -2;
             }

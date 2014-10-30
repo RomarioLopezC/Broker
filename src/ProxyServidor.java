@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -14,16 +15,21 @@ import java.util.StringTokenizer;
  */
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class ProxyServidor {
 
     Servidor servidor;
     ArrayList<String> cand;
+    ArrayList<Servers> servicios;
+    
+    
 
     public ProxyServidor() {
         this.servidor = new Servidor();
         this.cand = new ArrayList<>();
+        servicios = new ArrayList<>();
+        //inicializarServicios();
     }
 
     public void conectarServidor() {
@@ -34,21 +40,30 @@ public class ProxyServidor {
                     PrintWriter aBroker = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deBroker = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
-
+                
+                /*Aquí contestamos al broker, para decirle que ha sido
+                conectado con el proxyServidor y servidor.*/
                 System.out.println("Broker conectado: " + clientSocket.getInetAddress());
                 aBroker.println("Te has conectado al servidor satisfactoriamente");
+                /*El servidor solo pinta, por eso entre el proxyServidor y Servidor,
+                se conectan mediante Objetos.*/
                 String inputLine;
-
-                // Initiate conversation with client
+                
+                //Se llama a la Api.
+                
+                // Inicia Conversación con el broker.
                 inputLine = deBroker.readLine();
                 System.out.println("Broker: " + inputLine);
                 try {
                     String respuestaDeServidor = "";
 
                     if ((inputLine.contains("pastel"))) {
+                        
                         cand = desEmpaquetarDatos(inputLine);
-
+                        //Aquí llamamos al servidor para que pinte,
+                        //y éste a su vez contesta :
                         respuestaDeServidor = servidor.graficarPastel(cand);
+                        //la respuesta la imprimimos en la consola del broker:
                         aBroker.println(respuestaDeServidor);
 
                     } else if ((inputLine.contains("barras"))) {
@@ -58,9 +73,9 @@ public class ProxyServidor {
                         aBroker.println(respuestaDeServidor);
 
                     } else {
-                        aBroker.println("Terminar No se encuentra ese servicio, "
+                        aBroker.println("Terminar; No se encuentra ese servicio, "
                                 + "contacte al administrador");
-
+                                
                     }
 
                 } catch (NoClassDefFoundError e) {
@@ -74,7 +89,7 @@ public class ProxyServidor {
             }
         }
     }
-
+    
     private ArrayList<String> desEmpaquetarDatos(String cadenaDatos) {
 
         //separamos el String que tiene toda la información:
@@ -108,5 +123,10 @@ public class ProxyServidor {
     public static void main(String[] args) {
         ProxyServidor proxyServidor = new ProxyServidor();
         proxyServidor.conectarServidor();
+        /*necesita ipBroker, puertoBroker,puertoServidor.*/
+    }
+
+    private void inicializarServicios(Servicios servicio) {
+        
     }
 }

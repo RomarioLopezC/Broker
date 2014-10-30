@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class Cliente {
 
@@ -110,7 +110,7 @@ public class Cliente {
         boolean encontrado = false;
 
         for (Candidatos candidato : getCandidatos()) {
-            if (candidato.getNombre().equals(nombreCandidato)) {
+            if (candidato.getNombre().contains(nombreCandidato)) {
                 candidato.incrementarVotos();
                 encontrado = true;
                 break;
@@ -123,9 +123,10 @@ public class Cliente {
     }
 
     public void verVotos() {
+        System.out.println("ID\tNombre\t\tVotos");
         for (Candidatos candidato : getCandidatos()) {
-            System.out.println("Id: " + candidato.getId() + ">>" + candidato.getNombre()
-                    + " >> " + candidato.getVotos());
+            
+            System.out.println( candidato );
         }
     }
 
@@ -165,9 +166,10 @@ public class Cliente {
     public void limpiarConsola() {
         try {
             System.console().flush();
-            //Runtime.getRuntime().exec("cls");
+            Runtime.getRuntime().exec("cls");
+            
 
-        } catch (final Exception e) {
+        } catch ( Exception e) {
             //  Handle any exceptions.
             System.out.println("Error Contacte al administrador del programa.");
         }

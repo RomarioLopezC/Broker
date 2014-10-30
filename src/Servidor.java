@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
@@ -14,7 +13,7 @@ import org.jfree.data.general.DefaultPieDataset;
  */
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class Servidor {
 
@@ -27,7 +26,7 @@ public class Servidor {
         System.out.println("inicializando Servidor.");
         inicializarGraficosPastel();
         inicializarGraficosBarras();
-        
+
     }
 
     private void inicializarGraficosBarras() {
@@ -60,10 +59,8 @@ public class Servidor {
     }
 
     private boolean esMultiploDeTres(int num) {
-        if (num % 3 == 0) {
-            return true;
-        }
-        return false;
+     
+        return ((num % 3) == 0);
     }
 
     public String graficarBarras(ArrayList<String> candidatos) {
@@ -86,7 +83,7 @@ public class Servidor {
                 true,
                 false);
 
-        return "Terminar, Solicitud Graficar Barras procesada con éxito.";
+        return "Terminar; Solicitud para Graficar Barras ha sido procesada con éxito.";
     }
 
     public String graficarPastel(ArrayList<String> candidatos) {
@@ -105,7 +102,7 @@ public class Servidor {
                 true,
                 false);
 
-        return "Terminar, Solicitud Grafica de Pastel, procesada con éxito.";
+        return "Terminar; Solicitud para Graficar Pastel ha sido procesada con éxito.";
     }
 
 }

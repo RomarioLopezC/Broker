@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class ProxyCliente {
 

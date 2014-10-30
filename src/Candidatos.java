@@ -1,6 +1,6 @@
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class Candidatos {
     private String nombre;
@@ -44,7 +44,7 @@ public class Candidatos {
 
     @Override
     public String toString() {
-        return getId() + "|" + getNombre() + "|" + getVotos();
+        return getId() + "   " + getNombre() + "   " + getVotos();
     } 
     
     

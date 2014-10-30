@@ -7,7 +7,7 @@
  */
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class Servers {
     String ip;
