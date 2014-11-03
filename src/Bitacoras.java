@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 /**
  *
- * @author Romario
+ * @author Lalo
  */
 public class Bitacoras {
 
@@ -17,7 +17,7 @@ public class Bitacoras {
 
     public static void escribirBitacoraBroker(String aEscribir) {
         try {
-            broker = new FileWriter("../bitacoras/bitacoraBroker.txt", true);
+            broker = new FileWriter("bitacoraBroker.txt", true);
             BufferedWriter bw = new BufferedWriter(broker);
             bw.write(aEscribir);
             bw.newLine();
@@ -29,7 +29,7 @@ public class Bitacoras {
 
     public static void escribirBitacoraProxyServidor(String aEscribir) {
         try {
-            proxyServidor = new FileWriter("../bitacoras/bitacoraProxyServidor.txt", true);
+            proxyServidor = new FileWriter("bitacoraProxyServidor.txt", true);
             BufferedWriter bw = new BufferedWriter(proxyServidor);
             bw.write(aEscribir);
             bw.newLine();
@@ -42,7 +42,7 @@ public class Bitacoras {
 
     public static void escribirBitacoraProxyCliente(String aEscribir) {
         try {
-            proxyCliente = new FileWriter("../bitacoras/bitacoraProxyCliente.txt", true);
+            proxyCliente = new FileWriter("bitacoraProxyCliente.txt", true);
             BufferedWriter bw = new BufferedWriter(proxyCliente);
             bw.write(aEscribir);
             bw.newLine();
@@ -51,10 +51,4 @@ public class Bitacoras {
         } catch (IOException ex) {
         }
     }
-
-    public static void main(String[] args) {
-        escribirBitacoraBroker("HOLA");
-        escribirBitacoraBroker("ADIOS");
-    }
-
 }

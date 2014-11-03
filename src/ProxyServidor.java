@@ -126,6 +126,7 @@ public class ProxyServidor {
 
     public static void main(String[] args) {
         ProxyServidor proxyServidor = new ProxyServidor();
+        //aquí hacemos uso de la API:
         API.agregarServidores();
         proxyServidor.conectarServidor();
     }
