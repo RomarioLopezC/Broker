@@ -1,4 +1,3 @@
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,12 +12,12 @@ import java.io.IOException;
  * @author Romario
  */
 public class Bitacoras {
-    private static FileWriter broker,proxyServidor,proxyCliente;
-    
-    
-    public static void escribirBitacoraBroker(String aEscribir){
+
+    private static FileWriter broker, proxyServidor, proxyCliente;
+
+    public static void escribirBitacoraBroker(String aEscribir) {
         try {
-            broker = new FileWriter("bitacoraBroker.txt", true);
+            broker = new FileWriter("../bitacoras/bitacoraBroker.txt", true);
             BufferedWriter bw = new BufferedWriter(broker);
             bw.write(aEscribir);
             bw.newLine();
@@ -27,30 +26,35 @@ public class Bitacoras {
         } catch (IOException ex) {
         }
     }
-    
-    public static void escribirBitacoraProxyServidor(String aEscribir){
+
+    public static void escribirBitacoraProxyServidor(String aEscribir) {
         try {
-            proxyServidor = new FileWriter("bitacoraProxyServidor.txt", true);
-            proxyServidor.write(aEscribir);
+            proxyServidor = new FileWriter("../bitacoras/bitacoraProxyServidor.txt", true);
+            BufferedWriter bw = new BufferedWriter(proxyServidor);
+            bw.write(aEscribir);
+            bw.newLine();
+            bw.close();
+
             proxyServidor.close();
         } catch (IOException ex) {
         }
     }
-    
-    public static void escribirBitacoraProxyCliente(String aEscribir){
+
+    public static void escribirBitacoraProxyCliente(String aEscribir) {
         try {
-            proxyCliente = new FileWriter("bitacoraProxyCliente.txt", true);
-            proxyCliente.write(aEscribir);
+            proxyCliente = new FileWriter("../bitacoras/bitacoraProxyCliente.txt", true);
+            BufferedWriter bw = new BufferedWriter(proxyCliente);
+            bw.write(aEscribir);
+            bw.newLine();
+            bw.close();
             proxyCliente.close();
         } catch (IOException ex) {
         }
     }
-    
-    
+
     public static void main(String[] args) {
         escribirBitacoraBroker("HOLA");
         escribirBitacoraBroker("ADIOS");
     }
-    
-    
+
 }

@@ -1,4 +1,4 @@
-import BrokerAPI.API_BROKER;
+import BrokerAPI.BrokerAPI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +23,7 @@ public class ProxyServidor {
     ArrayList<String> cand;
     ArrayList<Servers> servicios;
 
-    API_BROKER API;
+    public static BrokerAPI API;
 
     public ProxyServidor() {
         this.servidor = new Servidor();
@@ -31,15 +31,13 @@ public class ProxyServidor {
         servicios = new ArrayList<>();
         //inicializarServicios();
 
-        API = new API_BROKER();
+        API = new BrokerAPI();
     }
 
     public void conectarServidor() {
-        
-        
+
         while (true) {
             try (
-                    
                     ServerSocket serverSocket = new ServerSocket(4444);
                     Socket clientSocket = serverSocket.accept();
                     PrintWriter aBroker = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -57,7 +55,7 @@ public class ProxyServidor {
 
                 // Inicia Conversación con el broker.
                 inputLine = deBroker.readLine();
-                
+
                 try {
                     String respuestaDeServidor = "";
 
@@ -128,8 +126,7 @@ public class ProxyServidor {
 
     public static void main(String[] args) {
         ProxyServidor proxyServidor = new ProxyServidor();
-        API_BROKER.conectar("127.0.0.1", "4445", "127.0.0.1", "4444", "barras,pastel");
+        API.agregarServidores();
         proxyServidor.conectarServidor();
-        /*necesita ipBroker, puertoBroker,puertoServidor.*/
     }
 }

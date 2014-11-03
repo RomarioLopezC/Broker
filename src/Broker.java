@@ -56,19 +56,15 @@ public class Broker {
                         procesarServicio(inputLine, aCliente);
 
                     } else if (inputLine.toLowerCase().contains("agregarserv")) {
-                        
-                        registrarServicio(inputLine, clientSocket.getInetAddress().toString());
+                        String ip = clientSocket.getInetAddress().getHostAddress();
+                        registrarServicio(inputLine, ip);
 
                     } else {
                         aCliente.println("Terminar, Comando NO encontrado");
                     }
                 }
             } catch (IOException e) {
-                Bitacoras.escribirBitacoraBroker("Esta ocupado el puerto "
-                        + puerto + " intenta con otro puerto. " + e.getMessage());
-                System.out.println("Esta ocupado el puerto "
-                        + puerto + " intenta con otro puerto.");
-                System.out.println(e.getMessage());
+                
             }
         }
 
