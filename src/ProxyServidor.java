@@ -107,7 +107,8 @@ public class ProxyServidor {
 
         ArrayList<String> candidatos = new ArrayList<>();
         StringTokenizer tokenCandidatos;
-
+        Bitacoras.escribirBitacoraProxyServidor("Se está des-Empaquetando los datos, para poder graficar"
+                + " la solicitud...");
         for (String candidato : infoCandidatos) {
             tokenCandidatos = new StringTokenizer(candidato, "&");
 
@@ -120,7 +121,8 @@ public class ProxyServidor {
             //obtiene los votos:
             candidatos.add(tokenCandidatos.nextToken());
         }
-
+        Bitacoras.escribirBitacoraProxyServidor("Los datos han sido des-empaquetados, se graficará "
+                + " la solicitud...");
         return candidatos;
     }
 

@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /*
  * To change this license header, choose License Headers deCliente Project Properties.
@@ -20,11 +21,8 @@ public class Broker {
 
     ArrayList<Servers> ListaDeServicios = new ArrayList();
 
-    public void iniciarBroker(String port) {
-        //192.168.230.185
-        //ListaDeServicios.add(new Servers("barras", "127.0.0.1", 4444));
-        //ListaDeServicios.add(new Servers("pastel", "127.0.0.1", 4444));
-        ListaDeServicios.add(new Servers("tabla", "192.168.1.25", 4444));
+    public void iniciarBroker(String port) {        
+        
         int puerto = Integer.parseInt(port);
 
         while (true) {
@@ -34,29 +32,31 @@ public class Broker {
                     PrintWriter aCliente = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deCliente = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
-
-                
-                
+                Bitacoras.escribirBitacoraBroker(new Date().toString());
                 Bitacoras.escribirBitacoraBroker("Broker inicializado y corriendo");
+                
+                Bitacoras.escribirBitacoraBroker(" ");
                 System.out.println("Broker inicializado y corriendo");
-                
+
                 aCliente.println("Ingresar comando");
-                
+
                 System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
                 Bitacoras.escribirBitacoraBroker("Cliente conectado: " + clientSocket.getInetAddress());
-               
+
                 String inputLine;
                 while ((inputLine = deCliente.readLine()) != null) {
-                    aCliente.println("Comando recibido.");
-                    Bitacoras.escribirBitacoraBroker("Cliente: " + inputLine);
-                    System.out.println("Cliente: " + inputLine);
+                    aCliente.println("Comando recibido de cliente.");
+                    Bitacoras.escribirBitacoraBroker("La información que envia el Cliente es: " + inputLine);
+                    Bitacoras.escribirBitacoraBroker("Fecha en que se envió la información: " + new Date().toString());
 
                     if (inputLine.toLowerCase().contains("graficar")) {
-                        aCliente.println("Se procesara la solicitud");
+                        aCliente.println("Se procesara la solicitud de graficar...");
                         procesarServicio(inputLine, aCliente);
 
                     } else if (inputLine.toLowerCase().contains("agregarserv")) {
                         String ip = clientSocket.getInetAddress().getHostAddress();
+                        Bitacoras.escribirBitacoraBroker("Se está agregando un Servidor, con sus Servicios. ");
+                        Bitacoras.escribirBitacoraBroker("Información para agregar un servidor: " + inputLine);
                         registrarServicio(inputLine, ip);
 
                     } else {
@@ -64,7 +64,7 @@ public class Broker {
                     }
                 }
             } catch (IOException e) {
-                
+
             }
         }
 
@@ -72,11 +72,10 @@ public class Broker {
 
     public void procesarServicio(String input, PrintWriter outClient) {
         String servicio = (input.split(",")[0]).split(" ")[1];
-        String datos = input.split(",")[1];
 
         int servidor = encontrarServidor(servicio, outClient);
         if (servidor == -1) {
-            outClient.println("Terminar, Servicio no encontrado");
+            outClient.println("Terminar; Servicio no encontrado");
         } else {
             //Que la variable servidor sea -2, Significa que si está 
             //el servicio pero está inactivo.
@@ -93,29 +92,28 @@ public class Broker {
                     PrintWriter aProxyServidor = new PrintWriter(cliente.getOutputStream(), true);
                     BufferedReader deProxyServidor = new BufferedReader(
                             new InputStreamReader(cliente.getInputStream()));) {
-                BufferedReader stdIn
-                        = new BufferedReader(new InputStreamReader(System.in));
                 String fromServer = null;
 
                 aProxyServidor.println(input);
                 fromServer = deProxyServidor.readLine();
-                
-                Bitacoras.escribirBitacoraBroker("Server: " + fromServer);
-                System.out.println("Server: " + fromServer);
-                
-                aProxyServidor.println(input);
+
+                Bitacoras.escribirBitacoraBroker("El servidor dice: " + fromServer);
+                System.out.println("El servidor dice: " + fromServer);
+
+                //aProxyServidor.println(input);
+                //Aquí respode el servidor y vamos de regreso..
                 fromServer = deProxyServidor.readLine();
                 outClient.println(fromServer);
 
             } catch (UnknownHostException e) {
-                
-                Bitacoras.escribirBitacoraBroker("Don't know about hostServer " + hostName);
-                System.err.println("Don't know about hostServer " + hostName);
-                
+
+                Bitacoras.escribirBitacoraBroker("No se reconoce la IP ("+hostName+") que se le está poniendo al servidor" );
+                System.err.println("No se reconoce la IP ("+hostName+") que se le está poniendo al servidor");
+
                 System.exit(1);
             } catch (IOException e) {
 
-                outClient.println("Terminar Servidor de servicio [" + ListaDeServicios.get(servidor).getServicio()
+                outClient.println("Terminar; Servidor de servicio [" + ListaDeServicios.get(servidor).getServicio()
                         + "] caido. Cambiando su estado"
                         + " a Inactivo.");
 
@@ -135,18 +133,27 @@ public class Broker {
     }
 
     /**
-     * Esta función sirve para agregar un servidor, sin embargo no está
-     * terminada. (Además no forma parte de la 2a entrega).
+     * Esta función sirve para agregar un servidor. recibe una cadena de este
+     * estilo: "agregarServ 127.0.0.1 4444 barras"
      *
-     * @param str
+     *
+     * @param str, Cadena que contiene la información del servicio a Agregar.
      * @param ipServidor
      * @param out
      */
     public void registrarServicio(String str, String ipServidor) {
-        String[] partida = str.split(" ");
+        /*Recibe una cadena de este estilo:
         
-        String servicio = partida[2];
-        int puerto = Integer.parseInt(partida[1]);
+         "agregarServ 127.0.0.1 4444 barras"
+              0          1        2    3
+         Lo que hace es separar la cadena anterior, por espacios:
+         */
+        String[] partida = str.split(" ");
+
+        //Luego obtiene el Servicio:
+        String servicio = partida[3];
+        int puerto = Integer.parseInt(partida[2]);
+
         ListaDeServicios.add(new Servers(servicio, ipServidor, puerto));
 
     }
@@ -168,7 +175,7 @@ public class Broker {
                 /*Si el servicio está, pero el servidor está siendo ocupado
                  entonces: */
             } else if (serv.getServicio().equalsIgnoreCase(servicio) && !serv.estaActivo()) {
-                outClient.println("Terminar Servicio encontrado pero está inactivo");
+                outClient.println("Terminar; Servicio encontrado pero está inactivo");
                 return -2;
             }
             num++;
@@ -177,6 +184,7 @@ public class Broker {
     }
 
     public static void main(String[] args) {
+
         if (args.length != 1) {
             System.err.println(
                     "Uso: java Broker <port number>");
