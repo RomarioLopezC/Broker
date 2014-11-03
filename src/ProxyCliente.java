@@ -76,6 +76,8 @@ public class ProxyCliente {
 
             while ((fromBroker = deBroker.readLine()) != null) {
                 System.out.println("**Broker: " + fromBroker);
+                Bitacoras.escribirBitacoraProxyCliente("**Broker: " + fromBroker);
+                
                 if (fromBroker.toLowerCase().contains("terminar")) {
                     //lo ponemos en 0, para permitir que siga la ejecución.
                     setSTATE(0);
@@ -95,6 +97,7 @@ public class ProxyCliente {
                     }
                 }else{
                     if (getSTATE() == TERMINO){
+                        Bitacoras.escribirBitacoraProxyCliente("***Se cerrará la aplicación***");
                         System.out.println("\n\n***Se cerrará la aplicación***\n\n");
                         System.exit(0);
                     }
@@ -102,8 +105,11 @@ public class ProxyCliente {
             }
 
         } catch (UnknownHostException e) {
+            Bitacoras.escribirBitacoraProxyCliente("No se conoce la ip: " + nombreBroker);
             System.err.println("No se conoce la ip: " + nombreBroker);
         } catch (IOException e) {
+             Bitacoras.escribirBitacoraProxyCliente("No se pudo conectar al Broker, asegurate de que este corriendo "
+                    + nombreBroker);
             System.err.println("No se pudo conectar al Broker, asegurate de que este corriendo "
                     + nombreBroker);
         }

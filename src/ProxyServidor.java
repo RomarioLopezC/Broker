@@ -1,8 +1,8 @@
+import BrokerAPI.API_BROKER;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -22,43 +22,47 @@ public class ProxyServidor {
     Servidor servidor;
     ArrayList<String> cand;
     ArrayList<Servers> servicios;
-    
-    
+
+    API_BROKER API;
 
     public ProxyServidor() {
         this.servidor = new Servidor();
         this.cand = new ArrayList<>();
         servicios = new ArrayList<>();
         //inicializarServicios();
+
+        API = new API_BROKER();
     }
 
     public void conectarServidor() {
+        
+        
         while (true) {
             try (
+                    
                     ServerSocket serverSocket = new ServerSocket(4444);
                     Socket clientSocket = serverSocket.accept();
                     PrintWriter aBroker = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deBroker = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
-                
+
                 /*Aquí contestamos al broker, para decirle que ha sido
-                conectado con el proxyServidor y servidor.*/
+                 conectado con el proxyServidor y servidor.*/
+                Bitacoras.escribirBitacoraProxyServidor("Broker conectado: " + clientSocket.getInetAddress());
                 System.out.println("Broker conectado: " + clientSocket.getInetAddress());
                 aBroker.println("Te has conectado al servidor satisfactoriamente");
                 /*El servidor solo pinta, por eso entre el proxyServidor y Servidor,
-                se conectan mediante Objetos.*/
+                 se conectan mediante Objetos.*/
                 String inputLine;
-                
-                //Se llama a la Api.
-                
+
                 // Inicia Conversación con el broker.
                 inputLine = deBroker.readLine();
-                System.out.println("Broker: " + inputLine);
+                
                 try {
                     String respuestaDeServidor = "";
 
                     if ((inputLine.contains("pastel"))) {
-                        
+
                         cand = desEmpaquetarDatos(inputLine);
                         //Aquí llamamos al servidor para que pinte,
                         //y éste a su vez contesta :
@@ -75,7 +79,7 @@ public class ProxyServidor {
                     } else {
                         aBroker.println("Terminar; No se encuentra ese servicio, "
                                 + "contacte al administrador");
-                                
+
                     }
 
                 } catch (NoClassDefFoundError e) {
@@ -83,18 +87,20 @@ public class ProxyServidor {
                 }
 
             } catch (IOException e) {
+                Bitacoras.escribirBitacoraProxyServidor("Exception caught when trying to listen on port "
+                        + 4444 + " or listening for a connection" + e.getMessage());
                 System.out.println("Exception caught when trying to listen on port "
                         + 4444 + " or listening for a connection");
                 System.out.println(e.getMessage());
             }
         }
     }
-    
+
     private ArrayList<String> desEmpaquetarDatos(String cadenaDatos) {
 
         //separamos el String que tiene toda la información:
         String datos = cadenaDatos.split(",")[1];
-        
+
         /*en infoCandidatos tendremos la información de los candidatos
          pero cada casilla es de esta forma:
          infoCandidatos[0] = "1&eduardo canche&5"
@@ -122,11 +128,8 @@ public class ProxyServidor {
 
     public static void main(String[] args) {
         ProxyServidor proxyServidor = new ProxyServidor();
+        API_BROKER.conectar("127.0.0.1", "4445", "127.0.0.1", "4444", "barras,pastel");
         proxyServidor.conectarServidor();
         /*necesita ipBroker, puertoBroker,puertoServidor.*/
-    }
-
-    private void inicializarServicios(Servicios servicio) {
-        
     }
 }

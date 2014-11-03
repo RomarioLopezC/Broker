@@ -22,8 +22,8 @@ public class Broker {
 
     public void iniciarBroker(String port) {
         //192.168.230.185
-        ListaDeServicios.add(new Servers("barras", "127.0.0.1", 4444));
-        ListaDeServicios.add(new Servers("pastel", "127.0.0.1", 4444));
+        //ListaDeServicios.add(new Servers("barras", "127.0.0.1", 4444));
+        //ListaDeServicios.add(new Servers("pastel", "127.0.0.1", 4444));
         ListaDeServicios.add(new Servers("tabla", "192.168.1.25", 4444));
         int puerto = Integer.parseInt(port);
 
@@ -35,28 +35,37 @@ public class Broker {
                     BufferedReader deCliente = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()));) {
 
+                
+                
+                Bitacoras.escribirBitacoraBroker("Broker inicializado y corriendo");
                 System.out.println("Broker inicializado y corriendo");
+                
                 aCliente.println("Ingresar comando");
+                
                 System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
-
+                Bitacoras.escribirBitacoraBroker("Cliente conectado: " + clientSocket.getInetAddress());
+               
                 String inputLine;
                 while ((inputLine = deCliente.readLine()) != null) {
                     aCliente.println("Comando recibido.");
+                    Bitacoras.escribirBitacoraBroker("Cliente: " + inputLine);
                     System.out.println("Cliente: " + inputLine);
 
                     if (inputLine.toLowerCase().contains("graficar")) {
                         aCliente.println("Se procesara la solicitud");
                         procesarServicio(inputLine, aCliente);
 
-                    } else if (inputLine.toLowerCase().contains("agregarServ")) {
-                        /*Todavía no está implementado.*/
-                        registrarServicio(inputLine, aCliente);
+                    } else if (inputLine.toLowerCase().contains("agregarserv")) {
+                        
+                        registrarServicio(inputLine, clientSocket.getInetAddress().toString());
 
                     } else {
                         aCliente.println("Terminar, Comando NO encontrado");
                     }
                 }
             } catch (IOException e) {
+                Bitacoras.escribirBitacoraBroker("Esta ocupado el puerto "
+                        + puerto + " intenta con otro puerto. " + e.getMessage());
                 System.out.println("Esta ocupado el puerto "
                         + puerto + " intenta con otro puerto.");
                 System.out.println(e.getMessage());
@@ -84,23 +93,29 @@ public class Broker {
             int portNumber = ListaDeServicios.get(servidor).getPort();
 
             try (
-                    Socket kkSocket = new Socket(hostName, portNumber);
-                    PrintWriter aProxyServidor = new PrintWriter(kkSocket.getOutputStream(), true);
+                    Socket cliente = new Socket(hostName, portNumber);
+                    PrintWriter aProxyServidor = new PrintWriter(cliente.getOutputStream(), true);
                     BufferedReader deProxyServidor = new BufferedReader(
-                            new InputStreamReader(kkSocket.getInputStream()));) {
+                            new InputStreamReader(cliente.getInputStream()));) {
                 BufferedReader stdIn
                         = new BufferedReader(new InputStreamReader(System.in));
                 String fromServer = null;
 
                 aProxyServidor.println(input);
                 fromServer = deProxyServidor.readLine();
+                
+                Bitacoras.escribirBitacoraBroker("Server: " + fromServer);
                 System.out.println("Server: " + fromServer);
+                
                 aProxyServidor.println(input);
                 fromServer = deProxyServidor.readLine();
                 outClient.println(fromServer);
 
             } catch (UnknownHostException e) {
+                
+                Bitacoras.escribirBitacoraBroker("Don't know about hostServer " + hostName);
                 System.err.println("Don't know about hostServer " + hostName);
+                
                 System.exit(1);
             } catch (IOException e) {
 
@@ -114,6 +129,8 @@ public class Broker {
                  encuentra disponible para dar servicio.*/
                 ListaDeServicios.get(servidor).setEstaActivo(false);
                 //imprimimos que es imposible conectarnos:
+                Bitacoras.escribirBitacoraBroker("No se pudo conectar a "
+                        + hostName);
                 System.err.println("No se pudo conectar a "
                         + hostName);
             }
@@ -126,16 +143,15 @@ public class Broker {
      * terminada. (Además no forma parte de la 2a entrega).
      *
      * @param str
+     * @param ipServidor
      * @param out
      */
-    public void registrarServicio(String str, PrintWriter out) {
+    public void registrarServicio(String str, String ipServidor) {
         String[] partida = str.split(" ");
-
-        String servicio = partida[3];
-        String ip = partida[1];
-        int puerto = Integer.parseInt(partida[2]);
-        ListaDeServicios.add(new Servers(servicio, ip, puerto));
-        out.println("Servidor agregado> " + partida[1]);
+        
+        String servicio = partida[2];
+        int puerto = Integer.parseInt(partida[1]);
+        ListaDeServicios.add(new Servers(servicio, ipServidor, puerto));
 
     }
 
