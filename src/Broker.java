@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 /*
  * To change this license header, choose License Headers deCliente Project Properties.
@@ -21,8 +23,8 @@ public class Broker {
 
     ArrayList<Servers> ListaDeServicios = new ArrayList();
 
-    public void iniciarBroker(String port) {        
-        
+    public void iniciarBroker(String port) {
+
         int puerto = Integer.parseInt(port);
 
         while (true) {
@@ -34,7 +36,7 @@ public class Broker {
                             new InputStreamReader(clientSocket.getInputStream()));) {
                 Bitacoras.escribirBitacoraBroker(new Date().toString());
                 Bitacoras.escribirBitacoraBroker("Broker inicializado y corriendo");
-                
+
                 Bitacoras.escribirBitacoraBroker(" ");
                 System.out.println("Broker inicializado y corriendo");
 
@@ -56,8 +58,22 @@ public class Broker {
                     } else if (inputLine.toLowerCase().contains("agregarserv")) {
                         String ip = clientSocket.getInetAddress().getHostAddress();
                         Bitacoras.escribirBitacoraBroker("Se está agregando un Servidor, con sus Servicios. ");
-                        Bitacoras.escribirBitacoraBroker("Información para agregar un servidor: " + inputLine);
                         registrarServicio(inputLine, ip);
+
+                    } else if (inputLine.toLowerCase().contains("eliminarserv")) {
+                        String ip = clientSocket.getInetAddress().getHostAddress();
+
+                        eliminarServicio(inputLine, ip);
+
+                    } else if (inputLine.toLowerCase().contains("activarserv")) {
+                        String ip = clientSocket.getInetAddress().getHostAddress();
+
+                        activarServicio(inputLine, ip);
+
+                    } else if (inputLine.toLowerCase().contains("desactivarserv")) {
+                        String ip = clientSocket.getInetAddress().getHostAddress();
+
+                        desactivarServicio(inputLine, ip);
 
                     } else {
                         aCliente.println("Terminar, Comando NO encontrado");
@@ -77,9 +93,11 @@ public class Broker {
         if (servidor == -1) {
             outClient.println("Terminar; Servicio no encontrado");
         } else {
-            //Que la variable servidor sea -2, Significa que si está 
-            //el servicio pero está inactivo.
-            //Para más información checar funcion Encontrar Servidor
+            /*
+            Que la variable servidor sea -2, Significa que si está
+            el servicio pero está inactivo.
+            Para más información checar funcion Encontrar Servidor
+            */
             if (servidor == -2) {
                 outClient.println("Terminar, Servicio inactivo");
                 return;
@@ -100,15 +118,14 @@ public class Broker {
                 Bitacoras.escribirBitacoraBroker("El servidor dice: " + fromServer);
                 System.out.println("El servidor dice: " + fromServer);
 
-                //aProxyServidor.println(input);
                 //Aquí respode el servidor y vamos de regreso..
                 fromServer = deProxyServidor.readLine();
                 outClient.println(fromServer);
 
             } catch (UnknownHostException e) {
 
-                Bitacoras.escribirBitacoraBroker("No se reconoce la IP ("+hostName+") que se le está poniendo al servidor" );
-                System.err.println("No se reconoce la IP ("+hostName+") que se le está poniendo al servidor");
+                Bitacoras.escribirBitacoraBroker("No se reconoce la IP (" + hostName + ") que se le está poniendo al servidor");
+                System.err.println("No se reconoce la IP (" + hostName + ") que se le está poniendo al servidor");
 
                 System.exit(1);
             } catch (IOException e) {
@@ -117,12 +134,12 @@ public class Broker {
                         + "] caido. Cambiando su estado"
                         + " a Inactivo.");
 
-                /*Aquí es donde actualizamos nuestra Base de datos de
-                 servidores, ya que si  está siendo ocupado, se lanza una excepción
-                 y además seteamos dicho servidor como FALSO; es decir, no se
-                 encuentra disponible para dar servicio.*/
+                /*Aquí es donde actualizamos nuestra Base de datos de servidores,
+                ya que si  está siendo ocupado, se lanza una excepción y además 
+                seteamos dicho servidor como FALSO; es decir, no se encuentra
+                disponible para dar servicio.*/
                 ListaDeServicios.get(servidor).setEstaActivo(false);
-                //imprimimos que es imposible conectarnos:
+
                 Bitacoras.escribirBitacoraBroker("No se pudo conectar a "
                         + hostName);
                 System.err.println("No se pudo conectar a "
@@ -139,13 +156,12 @@ public class Broker {
      *
      * @param str, Cadena que contiene la información del servicio a Agregar.
      * @param ipServidor
-     * @param out
      */
     public void registrarServicio(String str, String ipServidor) {
         /*Recibe una cadena de este estilo:
         
          "agregarServ 127.0.0.1 4444 barras"
-              0          1        2    3
+         0          1        2    3
          Lo que hace es separar la cadena anterior, por espacios:
          */
         String[] partida = str.split(" ");
@@ -181,6 +197,77 @@ public class Broker {
             num++;
         }
         return -1;
+    }
+
+    private void eliminarServicio(String ipServidor, String str) {
+        //input linea es de la forma: "eliminarServ " + " " + puertoServidor + " "+ "barras,pastel";
+        String[] Tokens = str.split(" ");
+
+        int puertoServidor = Integer.parseInt(Tokens[1]);
+        LinkedList<String> servs = devolverServicios(Tokens[2]);
+        
+
+        for (String servicio : servs) {
+            int indice = esElServicio(ipServidor, puertoServidor, servicio);
+            if (indice > 0) {
+                ListaDeServicios.remove(indice);
+            }
+        }
+
+    }
+
+    private void desactivarServicio(String ipServidor, String str) {
+        //input linea es de la forma: "desactivarServ " + " " + puertoServidor + " "+ "barras,pastel";
+        String[] tokens = str.split(" ");
+
+        int puertoServidor = Integer.parseInt(tokens[1]);
+        LinkedList<String> servs = devolverServicios(tokens[2]);
+        
+
+        for (String servicio : servs) {
+            int indice = esElServicio(ipServidor, puertoServidor, servicio);
+            if (indice > 0) {
+                ListaDeServicios.get(indice).setEstaActivo(false);
+            }
+        }
+    }
+
+    private void activarServicio(String ipServidor, String str) {
+        //input linea es de la forma: "activarServ " + " " + puertoServidor + " "+ "barras,pastel";
+        String[] tokens = str.split(" ");
+
+        int puertoServidor = Integer.parseInt(tokens[1]);
+        LinkedList<String> servs = devolverServicios(tokens[2]);
+        
+
+        for (String servicio : servs) {
+            int indice = esElServicio(ipServidor, puertoServidor, servicio);
+            if (indice > 0) {
+                ListaDeServicios.get(indice).setEstaActivo(true);
+            }
+        }
+    }
+
+    private int esElServicio(String ipServidor, int puerto, String Servicio) {
+        for (int i = 0; i < ListaDeServicios.size(); i++) {
+            if (ListaDeServicios.get(i).getIp().equalsIgnoreCase(ipServidor)
+                    && ListaDeServicios.get(i).getPort() == puerto
+                    && Servicio.equalsIgnoreCase(ListaDeServicios.get(i).getServicio())) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    private LinkedList<String> devolverServicios(String servicios) {
+        StringTokenizer tokens = new StringTokenizer(servicios, ",");
+        LinkedList<String> SERVICIOS = new LinkedList<>();
+
+        while (tokens.hasMoreTokens()) {
+            SERVICIOS.add(tokens.nextToken());
+        }
+        return SERVICIOS;
     }
 
     public static void main(String[] args) {

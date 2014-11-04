@@ -8,11 +8,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Lalo
@@ -34,11 +29,11 @@ public class ProxyServidor {
         API = new BrokerAPI();
     }
 
-    public void conectarServidor() {
+    public void conectarServidor(int puerto) {
 
         while (true) {
             try (
-                    ServerSocket serverSocket = new ServerSocket(4444);
+                    ServerSocket serverSocket = new ServerSocket(puerto);
                     Socket clientSocket = serverSocket.accept();
                     PrintWriter aBroker = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader deBroker = new BufferedReader(
@@ -68,7 +63,7 @@ public class ProxyServidor {
                         //la respuesta la imprimimos en la consola del broker:
                         aBroker.println(respuestaDeServidor);
 
-                    } else if ((inputLine.contains("barras"))) {
+                    } else if (( inputLine.contains("barras")  )) {
                         cand = desEmpaquetarDatos(inputLine);
 
                         respuestaDeServidor = servidor.graficarBarras(cand);
@@ -127,9 +122,17 @@ public class ProxyServidor {
     }
 
     public static void main(String[] args) {
+        if(args.length != 1){
+             System.err.println(
+                    "Uso: java -jar ClienteBroker.jar <número de puerto>");
+            System.err.println(
+                    "Ejemplo: java -jar ClienteBroker.jar 4444");
+            System.exit(1);
+        }
         ProxyServidor proxyServidor = new ProxyServidor();
         //aquí hacemos uso de la API:
         API.agregarServidores();
-        proxyServidor.conectarServidor();
+        int puertoProxyServidor = Integer.parseInt(args[0]);
+        proxyServidor.conectarServidor(puertoProxyServidor);
     }
 }
